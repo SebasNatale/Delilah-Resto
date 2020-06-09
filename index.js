@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 const key = require("./shh");
 
 const sql = new sequelize("mysql://lJREna0GOO:Vf5yMxDH7x@remotemysql.com:3306/lJREna0GOO");
+sql.authenticate().then(() => console.log("DB conectada!"));
 const server = express();
 server.use(cors());
 server.use(parser.json());
