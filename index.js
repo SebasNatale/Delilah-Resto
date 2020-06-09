@@ -14,5 +14,10 @@ server.use(cors());
 server.use(parser.json());
 server.listen(3000, () => console.log("Servidor iniciado!"));
 
-//--------------------------------------------------------- SOME OTHER SHIT
+//--------------------------------------------------------- ENDPOINTS
 
+//PRODUCTOS
+server.get("/productos", async function (req, res) {
+    var [xd] = await sql.query("SELECT * FROM productos", {raw: true})
+    res.json(xd)
+})
