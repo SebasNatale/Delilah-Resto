@@ -12,9 +12,7 @@ sql.authenticate().then(() => console.log("DB conectada!"));
 const server = express();
 server.use(cors());
 server.use(parser.json());
-server.listen(3000, () => {
-    console.log("Servidor iniciado!")
-});
+server.listen(3000, () => console.log("Servidor iniciado!"));
 
 //--------------------------------------------------------- SOME OTHER SHIT
 
