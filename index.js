@@ -19,11 +19,16 @@ sql.authenticate().then(() => console.log("DB conectada!"));
 
 //Obtener lista
 server.get("/productos", async function(req, res) {
-    var [list] = await sql.query("SELECT * FROM productos", {raw: true})
-    res.json(list)
+    var [lista] = await sql.query("SELECT * FROM productos")
+    res.json(lista)
 })
 
 //Crear items
-server.post("/products", async function(req, res) {
-    
+server.post("/productos", async function(req, res) {
+    var {nombre, precio, link_foto} = req.body
+    var entrada = await sql.query(`
+        INSERT INTO productos (nombre, precio, link_foto) 
+        VALUES ("${nombre}", "${precio}", "${link_foto}")`)
+    var [id] = await sql.query("SELECT * FROM productos ORDER BY product_id DESC LIMIT 1")
+    res.json(id)
 });
