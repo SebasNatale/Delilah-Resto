@@ -23,6 +23,11 @@ server.get("/productos", async function(req, res) {
     res.json(lista)
 })
 
+server.get("/productos/:id", async function(req, res) {
+    var [lista] = await sql.query(`SELECT * FROM productos WHERE product_id = "${req.params.id}"`)
+    res.json(lista)
+})
+
 //Crear items
 server.post("/productos", async function(req, res) {
     var {nombre, precio, link_foto} = req.body
