@@ -32,7 +32,7 @@ server.get("/productos/:id", async function(req, res) {
 //Crear items
 server.post("/productos", async function(req, res) {
     var {nombre, precio, link_foto} = req.body
-    var entrada = await sql.query(`
+    await sql.query(`
         INSERT INTO productos (nombre, precio, link_foto) 
         VALUES ("${nombre}", "${precio}", "${link_foto}")`)
     var [id] = await sql.query("SELECT * FROM productos ORDER BY product_id DESC LIMIT 1")
@@ -70,4 +70,28 @@ server.put("/productos/:id", async function(req, res) {
 server.delete("/productos/:id", async function(req, res) {
     await sql.query(`DELETE FROM productos WHERE product_id = "${req.params.id}"`)
     res.send("Producto eliminado!")
+});
+
+//----------------------- USUARIOS
+
+//Crear un nuevo usuario
+server.post("/registro", async function (req, res) {
+    var {nombreUser, nombreCompleto, email, telefono, direccion, password} = req.body
+    await sql.query(`
+        INSERT INTO usuarios (nombreUser, nombreCompleto, email, telefono, direccion, password) 
+        VALUES ("${nombreUser}", "${nombreCompleto}", "${email}", "${telefono}", "${direccion}", "${password}")`)
+    var [id] = await sql.query("SELECT user_id FROM usuarios ORDER BY user_id DESC LIMIT 1")
+    res.json(id)
+});
+
+//Iniciar sesion
+server.post("/login", async function (req, res) {
+    var {nombreUser, password} = req.body
+    var [comparacion] = await sql.query(`SELECT * FROM usuarios WHERE nombreUser = "${nombreUser}" AND password = "${password}"`)
+    if (comparacion.length == 0) {
+        res.send("Credenciales incorrectas!")
+    } else {
+        var token = jwt.sign({usuario: nombreUser}, key)
+        res.send("Usuario autenticado! Token: " + token)
+    }
 });
