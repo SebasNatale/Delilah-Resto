@@ -14,6 +14,21 @@ server.listen(3000, () => console.log("Servidor iniciado!"));
 const sql = new sequelize("mysql://lJREna0GOO:Vf5yMxDH7x@remotemysql.com:3306/lJREna0GOO");
 sql.authenticate().then(() => console.log("DB conectada!"));
 
+//--------------------------------------------------------- MIDDLEWARES
+
+//Para autenticar requests
+function auth(req, res, next) {
+    try {
+        var token = req.headers.authorization
+        var verificar = jwt.verify(token, key)
+        if (verificar) {
+            return next()
+        }
+    } catch(error) {
+        res.send("Error en autenticación!")
+    }
+};
+
 //--------------------------------------------------------- ENDPOINTS
 //----------------------- PRODUCTOS
 
@@ -74,8 +89,14 @@ server.delete("/productos/:id", async function(req, res) {
 
 //----------------------- USUARIOS
 
+//Ver lista de usuarios
+server.get("/usuarios", auth, async function(req, res) {
+    var [lista] = await sql.query("SELECT * FROM usuarios")
+    res.json(lista)
+});
+
 //Crear un nuevo usuario
-server.post("/registro", async function (req, res) {
+server.post("/registro", async function(req, res) {
     var {nombreUser, nombreCompleto, email, telefono, direccion, password} = req.body
     await sql.query(`
         INSERT INTO usuarios (nombreUser, nombreCompleto, email, telefono, direccion, password) 
@@ -85,13 +106,13 @@ server.post("/registro", async function (req, res) {
 });
 
 //Iniciar sesion
-server.post("/login", async function (req, res) {
+server.post("/login", async function(req, res) {
     var {nombreUser, password} = req.body
     var [comparacion] = await sql.query(`SELECT * FROM usuarios WHERE nombreUser = "${nombreUser}" AND password = "${password}"`)
     if (comparacion.length == 0) {
         res.send("Credenciales incorrectas!")
     } else {
-        var token = jwt.sign({usuario: nombreUser}, key)
+        var token = jwt.sign({usuario: nombreUser}, key, {expiresIn: "60m"})
         res.send("Usuario autenticado! Token: " + token)
     }
 });
