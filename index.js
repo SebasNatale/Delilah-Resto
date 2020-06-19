@@ -17,13 +17,17 @@ sql.authenticate().then(() => console.log("DB conectada!"));
 //--------------------------------------------------------- MIDDLEWARES
 
 //Para autenticar requests
-function auth(req, res, next) {
+function adminAuth(req, res, next) {
     var token = req.headers.authorization
     if (!token) {
         res.send("No se detectó token de autorizacion!")
     } else {
         var verificar = jwt.verify(token, key)
-        if (verificar) {
+        var rol = verificar.admin
+        console.log(rol)
+        if (rol === "false") {
+            res.send("No tiene privilegios de administrador!")
+        } else {
             return next()
         }
     }
@@ -90,7 +94,7 @@ server.delete("/productos/:id", async function(req, res) {
 //----------------------- USUARIOS
 
 //Ver lista de usuarios
-server.get("/usuarios", auth, async function(req, res) {
+server.get("/usuarios", adminAuth, async function(req, res) {
     var [lista] = await sql.query("SELECT * FROM usuarios")
     res.json(lista)
 });
