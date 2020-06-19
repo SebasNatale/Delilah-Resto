@@ -18,14 +18,14 @@ sql.authenticate().then(() => console.log("DB conectada!"));
 
 //Para autenticar requests
 function auth(req, res, next) {
-    try {
-        var token = req.headers.authorization
+    var token = req.headers.authorization
+    if (!token) {
+        res.send("No se detectó token de autorizacion!")
+    } else {
         var verificar = jwt.verify(token, key)
         if (verificar) {
             return next()
         }
-    } catch(error) {
-        res.send("Error en autenticación!")
     }
 };
 
@@ -109,10 +109,11 @@ server.post("/registro", async function(req, res) {
 server.post("/login", async function(req, res) {
     var {nombreUser, password} = req.body
     var [comparacion] = await sql.query(`SELECT * FROM usuarios WHERE nombreUser = "${nombreUser}" AND password = "${password}"`)
+    var isAdmin = comparacion[0].Admin
     if (comparacion.length == 0) {
         res.send("Credenciales incorrectas!")
     } else {
-        var token = jwt.sign({usuario: nombreUser}, key, {expiresIn: "60m"})
+        var token = jwt.sign({usuario: nombreUser, admin: isAdmin}, key, {expiresIn: "60m"})
         res.send("Usuario autenticado! Token: " + token)
     }
 });
