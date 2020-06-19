@@ -16,7 +16,7 @@ sql.authenticate().then(() => console.log("DB conectada!"));
 
 //--------------------------------------------------------- MIDDLEWARES
 
-//Para autenticar requests
+//Para autenticar roles de usuario administrador
 function adminAuth(req, res, next) {
     var token = req.headers.authorization
     if (!token) {
@@ -37,18 +37,30 @@ function adminAuth(req, res, next) {
 
 //Obtener lista de productos
 server.get("/productos", async function(req, res) {
-    var [lista] = await sql.query("SELECT * FROM productos")
-    res.json(lista)
+    try {
+        var token = req.headers.authorization
+        jwt.verify(token, key)
+        var [lista] = await sql.query("SELECT * FROM productos")
+        res.json(lista)
+    } catch (error) {
+        res.send("Token no encontrado o expirado. Inicie sesion antes de continuar!")
+    }
 });
 
 //Obtener producto por ID
 server.get("/productos/:id", async function(req, res) {
-    var [lista] = await sql.query(`SELECT * FROM productos WHERE product_id = "${req.params.id}"`)
-    res.json(lista)
+    try {
+        var token = req.headers.authorization
+        jwt.verify(token, key)
+        var [lista] = await sql.query(`SELECT * FROM productos WHERE product_id = "${req.params.id}"`)
+        res.json(lista)
+    } catch (error) {
+        res.send("Token no encontrado o expirado. Inicie sesion antes de continuar!")
+    }
 });
 
 //Crear items
-server.post("/productos", async function(req, res) {
+server.post("/productos", adminAuth, async function(req, res) {
     var {nombre, precio, link_foto} = req.body
     await sql.query(`
         INSERT INTO productos (nombre, precio, link_foto) 
@@ -58,7 +70,7 @@ server.post("/productos", async function(req, res) {
 });
 
 //Editar item por ID
-server.put("/productos/:id", async function(req, res) {
+server.put("/productos/:id", adminAuth, async function(req, res) {
     var {nombre, precio, link_foto} = req.body
     async function edicion(llave, valor) {
         await sql.query(`UPDATE productos SET ${llave} = "${valor}" WHERE product_id = ${req.params.id}`)
@@ -85,7 +97,7 @@ server.put("/productos/:id", async function(req, res) {
 });
 
 //Borrar item por ID
-server.delete("/productos/:id", async function(req, res) {
+server.delete("/productos/:id", adminAuth, async function(req, res) {
     await sql.query(`DELETE FROM productos WHERE product_id = "${req.params.id}"`)
     res.send("Producto eliminado!")
 });
