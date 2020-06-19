@@ -24,7 +24,6 @@ function adminAuth(req, res, next) {
     } else {
         var verificar = jwt.verify(token, key)
         var rol = verificar.admin
-        console.log(rol)
         if (rol === "false") {
             res.send("No tiene privilegios de administrador!")
         } else {
