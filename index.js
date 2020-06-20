@@ -132,3 +132,16 @@ server.post("/login", async function(req, res) {
         res.send("Usuario autenticado! Token: " + token)
     }
 });
+
+//----------------------- PEDIDOS
+
+//Crear una nueva orden
+server.post("/pedidos", async function(req, res) {
+    try {
+        var token = req.headers.authorization
+        jwt.verify(token, key)
+        var {}
+    } catch (error) {
+        res.send("Token no encontrado o expirado. Inicie sesion antes de continuar!")
+    }
+});
