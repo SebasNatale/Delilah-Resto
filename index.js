@@ -43,6 +43,12 @@ async function productSort(i) {
     return product
 };
 
+//Para generar descripciones de los pedidos
+async function orderInfo(product_id, cantidad, i) {
+    var [nombre] = await sql.query(`SELECT nombre FROM productos WHERE product_id = "${product_id}"`)
+    return `${cantidad}x ${nombre[0].nombre}`
+};
+
 //--------------------------------------------------------- ENDPOINTS
 //----------------------- PRODUCTOS
 
@@ -190,15 +196,18 @@ server.post("/pedidos", async function(req, res) {
         if (userData.length == 0) {
             res.send("Error al autenticar usuario!")
         } else {
+            var descripcion = []
+            for(var i = 0; i < productos.length; i++) {
+                descripcion[i] = await orderInfo(productos[i].product_id, productos[i].cantidad)
+            }
             var [ordenID] = await sql.query(`
                 INSERT INTO ordenes(user_id, hora, descripcion, precio, metodoPago)
-                VALUES ("${userData[0].user_id}", "${new Date().toLocaleTimeString()}", "------ARREGLAR DESCRIPCIONES------", "${precio}", "${metodoPago}")`)
-            productos.forEach(async function(item) {
-                var {product_id, cantidad} = item
-                var [insertID] = await sql.query(`
+                VALUES ("${userData[0].user_id}", "${new Date().toLocaleTimeString()}", "${descripcion.toString()}", "${precio}", "${metodoPago}")`)
+            for(var i = 0; i < productos.length; i++) {
+                await sql.query(`
                     INSERT INTO productosPorOrden(order_id, product_id, cantidadProducto, metodoPago)
-                    VALUES ("${ordenID}", "${product_id}", "${cantidad}", "${metodoPago}")`)
-            })
+                    VALUES ("${ordenID}", "${productos[i].product_id}", "${productos[i].cantidad}", "${metodoPago}")`)
+            }
         }
         var [response] = await sql.query(`
             SELECT ordenes.order_id, ordenes.descripcion, ordenes.precio, ordenes.metodoPago, usuarios.nombreUser, usuarios.direccion
