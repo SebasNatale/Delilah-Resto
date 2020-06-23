@@ -206,3 +206,9 @@ server.put("/pedidos/:id", adminAuth, async function(req, res) {
     var [respo] = await sql.query(`SELECT * FROM ordenes WHERE order_id = "${req.params.id}"`)
     res.json(respo)
 });
+
+//Eliminar pedido
+server.delete("/pedidos/:id", adminAuth, async function(req, res) {
+    await sql.query(`DELETE FROM ordenes WHERE order_id = "${req.params.id}"`)
+    res.send("Pedido eliminado!")
+});
