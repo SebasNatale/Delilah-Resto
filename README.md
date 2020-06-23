@@ -24,3 +24,6 @@ _El dominio de la API es "localhost:3000"_
 
 # Especificacion de la API
 [Documento](/spec.yaml)
+
+**Indicacion especial!**
+Al registrar un usuario nuevo, esta API pedirá un booleano para la key "admin". Esto es unicamente con propositos demonstrativos y no representa el comportamiento indicado en un entorno de produccion.
