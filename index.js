@@ -139,8 +139,37 @@ server.post("/login", async function(req, res) {
 server.post("/pedidos", async function(req, res) {
     try {
         var token = req.headers.authorization
-        jwt.verify(token, key)
-        var {}
+        var verificar = jwt.verify(token, key)
+        var user = verificar.usuario
+        var {productos, precio, metodoPago} = req.body
+        var [userData] = await sql.query(`SELECT * FROM usuarios WHERE nombreUser = "${user}"`)
+        if (userData.length == 0) {
+            res.send("Error al autenticar usuario!")
+        } else {
+            var [ordenID] = await sql.query(`
+                INSERT INTO ordenes(user_id, hora, descripcion, precio, metodoPago)
+                VALUES ("${userData[0].user_id}", "${new Date().toLocaleTimeString()}", "------ARREGLAR DESCRIPCIONES------", "${precio}", "${metodoPago}")`)
+            productos.forEach(async function(item) {
+                var {product_id, cantidad} = item
+                var [insertID] = await sql.query(`
+                    INSERT INTO productosPorOrden(order_id, product_id, cantidadProducto, metodoPago)
+                    VALUES ("${ordenID}", "${product_id}", "${cantidad}", "${metodoPago}")`)
+            })
+        }
+        var [response] = await sql.query(`
+            SELECT ordenes.order_id, ordenes.descripcion, ordenes.precio, ordenes.metodoPago, usuarios.nombreUser, usuarios.direccion
+            FROM ordenes
+            JOIN usuarios
+            ON ordenes.user_id = usuarios.user_id
+            WHERE ordenes.order_id = "${ordenID}"`)
+        var [products] = await sql.query(`
+            SELECT productosPorOrden.product_id, productosPorOrden.cantidadProducto, productos.nombre, productos.precio
+            FROM productosPorOrden
+            JOIN productos
+            ON productosPorOrden.product_id = productos.product_id
+            WHERE productosPorOrden.order_id = "${ordenID}"`)
+        response[0].productos = products
+        res.send(response[0])
     } catch (error) {
         res.send("Token no encontrado o expirado. Inicie sesion antes de continuar!")
     }
