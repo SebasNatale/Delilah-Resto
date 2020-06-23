@@ -3,9 +3,6 @@
 
 Este proyecto consiste en una API RESTful basada en JavaScript y Node.JS para la administracion de restaurantes online que permite que usuarios regulares puedan crear una cuenta, ver distintos productos, tener platos favoritos y crear ordenes, mientras los usuarios administradores controlan accesos y manejo de operaciones CRUD en cuanto a ordenes, usuarios y productos.
 
-# Especificacion de la API
-[Documento](/spec.yaml)
-
 # Primeros pasos
 **Clonar la repo.**
 ````
@@ -24,3 +21,6 @@ node index
 ````
 
 _El dominio de la API es "localhost:3000"_
+
+# Especificacion de la API
+[Documento](/spec.yaml)
