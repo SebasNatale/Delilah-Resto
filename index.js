@@ -20,12 +20,12 @@ sql.authenticate().then(() => console.log("DB conectada!"));
 function adminAuth(req, res, next) {
     var token = req.headers.authorization
     if (!token) {
-        res.send("No se detectó token de autorizacion!")
+        res.status(400).send("No se detectó token de autorizacion!")
     } else {
         var verificar = jwt.verify(token, key)
         var rol = verificar.admin
         if (rol === "false") {
-            res.send("No tiene privilegios de administrador!")
+            res.status(401).send("No tiene privilegios de administrador!")
         } else {
             return next()
         }
@@ -52,9 +52,9 @@ server.get("/productos", async function(req, res) {
         var token = req.headers.authorization
         jwt.verify(token, key)
         var [lista] = await sql.query("SELECT * FROM productos")
-        res.json(lista)
+        res.status(200).json(lista)
     } catch (error) {
-        res.send("Token no encontrado o expirado. Inicie sesion antes de continuar!")
+        res.status(401).send("Token no encontrado o expirado. Inicie sesion antes de continuar!")
     }
 });
 
@@ -64,20 +64,24 @@ server.get("/productos/:id", async function(req, res) {
         var token = req.headers.authorization
         jwt.verify(token, key)
         var [lista] = await sql.query(`SELECT * FROM productos WHERE product_id = "${req.params.id}"`)
-        res.json(lista)
-    } catch (error) {
-        res.send("Token no encontrado o expirado. Inicie sesion antes de continuar!")
+        res.status(200).json(lista)
+    } catch(error) {
+        res.status(401).send("Token no encontrado o expirado. Inicie sesion antes de continuar!")
     }
 });
 
 //Crear items
 server.post("/productos", adminAuth, async function(req, res) {
     var {nombre, precio, link_foto} = req.body
-    await sql.query(`
-        INSERT INTO productos (nombre, precio, link_foto) 
-        VALUES ("${nombre}", "${precio}", "${link_foto}")`)
-    var [id] = await sql.query("SELECT * FROM productos ORDER BY product_id DESC LIMIT 1")
-    res.json(id)
+    try {
+        await sql.query(`
+            INSERT INTO productos (nombre, precio, link_foto) 
+            VALUES ("${nombre}", "${precio}", "${link_foto}")`)
+        var [id] = await sql.query("SELECT * FROM productos ORDER BY product_id DESC LIMIT 1")
+        res.status(200).json(id)
+    } catch(error) {
+        res.status(400).send("Error en solicitud! Los datos solicitados son nombre, precio y link_foto!")
+    }
 });
 
 //Editar item por ID
@@ -90,45 +94,57 @@ server.put("/productos/:id", adminAuth, async function(req, res) {
         if (nombre) {
             edicion(Object.getOwnPropertyNames(req.body), nombre)
             var [actualizado] = await sql.query(`SELECT * FROM productos WHERE product_id = "${req.params.id}"`)
-            res.json(actualizado)
+            res.status(200).json(actualizado)
         } else if (precio) {
             edicion(Object.getOwnPropertyNames(req.body), precio)
             var [actualizado] = await sql.query(`SELECT * FROM productos WHERE product_id = "${req.params.id}"`)
-            res.json(actualizado)
+            res.status(200).json(actualizado)
         } else if (link_foto) {
             edicion(Object.getOwnPropertyNames(req.body), link_foto)
             var [actualizado] = await sql.query(`SELECT * FROM productos WHERE product_id = "${req.params.id}"`)
-            res.json(actualizado)
+            res.status(200).json(actualizado)
         } else {
-            res.send("No se encontraron datos para actualizar!")
+            res.status(404).send("No se encontraron datos para actualizar!")
         }
-    } catch (error) {
-        res.send("Solo se puede actualizar un dato a la vez!")
+    } catch(error) {
+        res.status(400).send("Solo se puede actualizar un dato a la vez!")
     }
 });
 
 //Borrar item por ID
 server.delete("/productos/:id", adminAuth, async function(req, res) {
-    await sql.query(`DELETE FROM productos WHERE product_id = "${req.params.id}"`)
-    res.send("Producto eliminado!")
+    try {
+        await sql.query(`DELETE FROM productos WHERE product_id = "${req.params.id}"`)
+        res.status(200).send("Producto eliminado!")
+    } catch(error) {
+        res.status(404).send("Item no encontrado!")
+    }
 });
 
 //----------------------- USUARIOS
 
 //Ver lista de usuarios
 server.get("/usuarios", adminAuth, async function(req, res) {
-    var [lista] = await sql.query("SELECT * FROM usuarios")
-    res.json(lista)
+    try {
+        var [lista] = await sql.query("SELECT * FROM usuarios")
+        res.status(200).json(lista)
+    } catch(error) {
+        res.status(500).send("I honestly don't know...")
+    }
 });
 
 //Crear un nuevo usuario
 server.post("/registro", async function(req, res) {
     var {nombreUser, nombreCompleto, email, telefono, direccion, password, admin} = req.body
-    await sql.query(`
-        INSERT INTO usuarios (nombreUser, nombreCompleto, email, telefono, direccion, password, admin) 
-        VALUES ("${nombreUser}", "${nombreCompleto}", "${email}", "${telefono}", "${direccion}", "${password}", "${admin}")`)
-    var [id] = await sql.query("SELECT user_id FROM usuarios ORDER BY user_id DESC LIMIT 1")
-    res.json(id)
+    try {
+        await sql.query(`
+            INSERT INTO usuarios (nombreUser, nombreCompleto, email, telefono, direccion, password, admin) 
+            VALUES ("${nombreUser}", "${nombreCompleto}", "${email}", "${telefono}", "${direccion}", "${password}", "${admin}")`)
+        var [id] = await sql.query("SELECT user_id FROM usuarios ORDER BY user_id DESC LIMIT 1")
+        res.status(200).json(id)
+    } catch(error) {
+        res.status(400).send("Error en el tipo de valor en algun registro! Los items solicitados son: nombreUser, nombreCompleto, email, telefono, direccion y password!")
+    }
 });
 
 //Iniciar sesion
@@ -137,10 +153,10 @@ server.post("/login", async function(req, res) {
     var [comparacion] = await sql.query(`SELECT * FROM usuarios WHERE nombreUser = "${nombreUser}" AND password = "${password}"`)
     var isAdmin = comparacion[0].Admin
     if (comparacion.length == 0) {
-        res.send("Credenciales incorrectas!")
+        res.status(401).send("Credenciales incorrectas!")
     } else {
         var token = jwt.sign({usuario: nombreUser, admin: isAdmin}, key, {expiresIn: "60m"})
-        res.send("Usuario autenticado! Token: " + token)
+        res.status(200).send("Usuario autenticado! Token: " + token)
     }
 });
 
@@ -148,15 +164,19 @@ server.post("/login", async function(req, res) {
 
 //Ver lista de ordenes
 server.get("/pedidos", adminAuth, async function(req, res) {
-    var [orders] = await sql.query(`
-            SELECT ordenes.*, usuarios.nombreUser, usuarios.direccion
-            FROM ordenes
-            JOIN usuarios
-            ON ordenes.user_id = usuarios.user_id`)
-    for(var i = 0; i < orders.length; i++) {
-        orders[i].productos = await productSort(orders[i].order_id)
+    try {
+        var [orders] = await sql.query(`
+                SELECT ordenes.*, usuarios.nombreUser, usuarios.direccion
+                FROM ordenes
+                JOIN usuarios
+                ON ordenes.user_id = usuarios.user_id`)
+        for(var i = 0; i < orders.length; i++) {
+            orders[i].productos = await productSort(orders[i].order_id)
+        }
+        res.status(200).json(orders)
+    } catch(error) {
+        res.status(500).send("I honestly don't know...")
     }
-    res.json(orders)
 });
 
 //Crear una nueva orden
@@ -193,22 +213,30 @@ server.post("/pedidos", async function(req, res) {
             ON productosPorOrden.product_id = productos.product_id
             WHERE productosPorOrden.order_id = "${ordenID}"`)
         response[0].productos = products
-        res.send(response[0])
-    } catch (error) {
-        res.send("Token no encontrado o expirado. Inicie sesion antes de continuar!")
+        res.status(200).send(response[0])
+    } catch(error) {
+        res.status(401).send("Token no encontrado o expirado. Inicie sesion antes de continuar!")
     }
 });
 
 //Actualizar el estado de una orden
 server.put("/pedidos/:id", adminAuth, async function(req, res) {
     var edit = req.body
-    await sql.query(`UPDATE ordenes SET estado = "${edit.estado}" WHERE order_id = "${req.params.id}"`)
-    var [respo] = await sql.query(`SELECT * FROM ordenes WHERE order_id = "${req.params.id}"`)
-    res.json(respo)
+    try {
+        await sql.query(`UPDATE ordenes SET estado = "${edit.estado}" WHERE order_id = "${req.params.id}"`)
+        var [respo] = await sql.query(`SELECT * FROM ordenes WHERE order_id = "${req.params.id}"`)
+        res.status(200).json(respo)
+    } catch(error) {
+        res.status(500).send("I honestly don't know...")
+    }
 });
 
 //Eliminar pedido
 server.delete("/pedidos/:id", adminAuth, async function(req, res) {
-    await sql.query(`DELETE FROM ordenes WHERE order_id = "${req.params.id}"`)
-    res.send("Pedido eliminado!")
+    try {
+        await sql.query(`DELETE FROM ordenes WHERE order_id = "${req.params.id}"`)
+        res.status(200).send("Pedido eliminado!")
+    } catch(error) {
+        res.status(404).send("Pedido no encontrado!")
+    }
 });
