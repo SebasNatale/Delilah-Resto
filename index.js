@@ -202,9 +202,7 @@ server.post("/pedidos", async function(req, res) {
 //Actualizar el estado de una orden
 server.put("/pedidos/:id", adminAuth, async function(req, res) {
     var edit = req.body
-    await sql.query(`
-        UPDATE ordenes SET estado = "${edit.estado}" WHERE order_id = "${req.params.id}"
-    `)
+    await sql.query(`UPDATE ordenes SET estado = "${edit.estado}" WHERE order_id = "${req.params.id}"`)
     var [respo] = await sql.query(`SELECT * FROM ordenes WHERE order_id = "${req.params.id}"`)
     res.json(respo)
 });
