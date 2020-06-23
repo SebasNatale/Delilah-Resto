@@ -14,7 +14,7 @@ server.listen(3000, () => console.log("Servidor iniciado!"));
 const sql = new sequelize("mysql://lJREna0GOO:Vf5yMxDH7x@remotemysql.com:3306/lJREna0GOO");
 sql.authenticate().then(() => console.log("DB conectada!"));
 
-//--------------------------------------------------------- MIDDLEWARES
+//--------------------------------------------------------- MIDDLEWARES Y FUNCIONES
 
 //Para autenticar roles de usuario administrador
 function adminAuth(req, res, next) {
@@ -30,6 +30,17 @@ function adminAuth(req, res, next) {
             return next()
         }
     }
+};
+
+//Para agregar productos a lista de ordenes
+async function productSort(i) {
+    var [product] = await sql.query(`
+        SELECT productosPorOrden.product_id, productosPorOrden.cantidadProducto, productos.nombre, productos.precio
+        FROM productosPorOrden
+        JOIN productos
+        ON productos.product_id = productosPorOrden.product_id
+        WHERE productosPorOrden.order_id = "${i}"`)
+    return product
 };
 
 //--------------------------------------------------------- ENDPOINTS
@@ -137,14 +148,15 @@ server.post("/login", async function(req, res) {
 
 //Ver lista de ordenes
 server.get("/pedidos", adminAuth, async function(req, res) {
-    try {
-        var token = req.headers.authorization
-        jwt.verify(token, key)
-        var [lista] = await sql.query(`SELECT * FROM ordenes`)
-        res.json(lista)
-    } catch (error) {
-        res.send("Token no encontrado o expirado. Inicie sesion antes de continuar!")
+    var [orders] = await sql.query(`
+            SELECT ordenes.*, usuarios.nombreUser, usuarios.direccion
+            FROM ordenes
+            JOIN usuarios
+            ON ordenes.user_id = usuarios.user_id`)
+    for(var i = 0; i < orders.length; i++) {
+        orders[i].productos = await productSort(orders[i].order_id)
     }
+    res.json(orders)
 });
 
 //Crear una nueva orden
