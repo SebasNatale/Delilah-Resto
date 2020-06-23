@@ -25,7 +25,7 @@ function adminAuth(req, res, next) {
         var verificar = jwt.verify(token, key)
         var rol = verificar.admin
         if (rol === "false") {
-            res.status(401).send("No tiene privilegios de administrador!")
+            res.status(500).send("No tiene privilegios de administrador!")
         } else {
             return next()
         }
@@ -140,7 +140,7 @@ server.get("/usuarios", adminAuth, async function(req, res) {
 });
 
 //Crear un nuevo usuario
-server.post("/registro", async function(req, res) {
+server.post("/usuarios", async function(req, res) {
     var {nombreUser, nombreCompleto, email, telefono, direccion, password, admin} = req.body
     try {
         await sql.query(`
@@ -149,12 +149,12 @@ server.post("/registro", async function(req, res) {
         var [id] = await sql.query("SELECT user_id FROM usuarios ORDER BY user_id DESC LIMIT 1")
         res.status(200).json(id)
     } catch(error) {
-        res.status(400).send("Error en el tipo de valor en algun registro! Los items solicitados son: nombreUser, nombreCompleto, email, telefono, direccion y password!")
+        res.status(400).send("Error en el tipo de valor en algun registro! Los items solicitados son: nombreUser, nombreCompleto, email, telefono, direccion, password y admin!")
     }
 });
 
 //Iniciar sesion
-server.post("/login", async function(req, res) {
+server.post("/usuarios/login", async function(req, res) {
     var {nombreUser, password} = req.body
     var [comparacion] = await sql.query(`SELECT * FROM usuarios WHERE nombreUser = "${nombreUser}" AND password = "${password}"`)
     var isAdmin = comparacion[0].Admin
