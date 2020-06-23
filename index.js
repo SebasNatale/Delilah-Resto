@@ -135,6 +135,18 @@ server.post("/login", async function(req, res) {
 
 //----------------------- PEDIDOS
 
+//Ver lista de ordenes
+server.get("/pedidos", adminAuth, async function(req, res) {
+    try {
+        var token = req.headers.authorization
+        jwt.verify(token, key)
+        var [lista] = await sql.query(`SELECT * FROM ordenes`)
+        res.json(lista)
+    } catch (error) {
+        res.send("Token no encontrado o expirado. Inicie sesion antes de continuar!")
+    }
+});
+
 //Crear una nueva orden
 server.post("/pedidos", async function(req, res) {
     try {
