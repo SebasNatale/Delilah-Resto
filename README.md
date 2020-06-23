@@ -13,9 +13,14 @@ git clone https://github.com/SebasNatale/Delilah-Resto
 ````
 _La base de datos está alojada en remotemysql.com y el acceso a la misma ya está incluido en la API. No es necesario construirla desde cero!_
 
-_El dominio de la API es "localhost:3000"_
+**Instalar las dependencias.**
+````
+npm install
+````
 
 **Ejecutar la API**
 ````
 node index
 ````
+
+_El dominio de la API es "localhost:3000"_
