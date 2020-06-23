@@ -84,20 +84,20 @@ server.post("/productos", adminAuth, async function(req, res) {
 server.put("/productos/:id", adminAuth, async function(req, res) {
     var {nombre, precio, link_foto} = req.body
     async function edicion(llave, valor) {
-        await sql.query(`UPDATE productos SET ${llave} = "${valor}" WHERE product_id = ${req.params.id}`)
+        await sql.query(`UPDATE productos SET ${llave} = "${valor}" WHERE product_id = "${req.params.id}"`)
     }
     try {
         if (nombre) {
             edicion(Object.getOwnPropertyNames(req.body), nombre)
-            var [actualizado] = await sql.query(`SELECT * FROM productos WHERE product_id = ${req.params.id}`)
+            var [actualizado] = await sql.query(`SELECT * FROM productos WHERE product_id = "${req.params.id}"`)
             res.json(actualizado)
         } else if (precio) {
             edicion(Object.getOwnPropertyNames(req.body), precio)
-            var [actualizado] = await sql.query(`SELECT * FROM productos WHERE product_id = ${req.params.id}`)
+            var [actualizado] = await sql.query(`SELECT * FROM productos WHERE product_id = "${req.params.id}"`)
             res.json(actualizado)
         } else if (link_foto) {
             edicion(Object.getOwnPropertyNames(req.body), link_foto)
-            var [actualizado] = await sql.query(`SELECT * FROM productos WHERE product_id = ${req.params.id}`)
+            var [actualizado] = await sql.query(`SELECT * FROM productos WHERE product_id = "${req.params.id}"`)
             res.json(actualizado)
         } else {
             res.send("No se encontraron datos para actualizar!")
@@ -123,10 +123,10 @@ server.get("/usuarios", adminAuth, async function(req, res) {
 
 //Crear un nuevo usuario
 server.post("/registro", async function(req, res) {
-    var {nombreUser, nombreCompleto, email, telefono, direccion, password} = req.body
+    var {nombreUser, nombreCompleto, email, telefono, direccion, password, admin} = req.body
     await sql.query(`
-        INSERT INTO usuarios (nombreUser, nombreCompleto, email, telefono, direccion, password) 
-        VALUES ("${nombreUser}", "${nombreCompleto}", "${email}", "${telefono}", "${direccion}", "${password}")`)
+        INSERT INTO usuarios (nombreUser, nombreCompleto, email, telefono, direccion, password, admin) 
+        VALUES ("${nombreUser}", "${nombreCompleto}", "${email}", "${telefono}", "${direccion}", "${password}", "${admin}")`)
     var [id] = await sql.query("SELECT user_id FROM usuarios ORDER BY user_id DESC LIMIT 1")
     res.json(id)
 });
