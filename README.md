@@ -10,6 +10,8 @@ git clone https://github.com/SebasNatale/Delilah-Resto
 ````
 _La base de datos está alojada en remotemysql.com y el acceso a la misma ya está incluido en la API. No es necesario construirla desde cero!_
 
+[Queries de estructura de la DB](/Estructura de la DB.sql)
+
 **Instalar las dependencias.**
 ````
 npm install
