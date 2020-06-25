@@ -34,6 +34,7 @@ paths:
           description: "Token de autorizacion"
           required: true
           type: "string"
+          example: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
         - in: "body"
           name: "body"
           description: "Producto a añadir"
@@ -78,6 +79,7 @@ paths:
           description: "Token de autorizacion"
           required: true
           type: "string"
+          example: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
         - in: "body"
           name: "body"
           description: "Producto a añadir"
@@ -109,6 +111,7 @@ paths:
           description: "Token de autorizacion"
           required: true
           type: "string"
+          example: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
       responses:
         200:
           description: "Borrado!"
@@ -128,6 +131,7 @@ paths:
           description: "Token de autorizacion"
           required: true
           type: "string"
+          example: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
       responses:
         200:
           description: "Exito!"
@@ -178,6 +182,7 @@ paths:
           description: "Token de autorizacion"
           required: true
           type: "string"
+          example: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
         - in: "body"
           name: "body"
           description: "Item a editar"
@@ -207,6 +212,7 @@ paths:
           description: "Token de autorizacion"
           required: true
           type: "string"
+          example: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
       responses:
         200:
           description: "Exito!"
@@ -223,6 +229,7 @@ paths:
           description: "Token de autorizacion"
           required: true
           type: "string"
+          example: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
       responses:
         200:
           description: "Exito!"
