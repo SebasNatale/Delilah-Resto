@@ -1,7 +1,7 @@
 # Delilah-Resto
 **Una API para el manejo de restaurantes.**
 
-Este proyecto consiste en una API RESTful basada en JavaScript y Node.JS para la administracion de restaurantes online que permite que usuarios regulares puedan crear una cuenta, ver distintos productos, tener platos favoritos y crear ordenes, mientras los usuarios administradores controlan accesos y manejo de operaciones CRUD en cuanto a ordenes, usuarios y productos.
+Este proyecto consiste en una API RESTful basada en Node.JS y MySQL para la administracion de restaurantes online que permite que usuarios regulares puedan crear una cuenta, ver distintos productos, tener platos favoritos y crear ordenes, mientras los usuarios administradores controlan accesos y manejo de operaciones CRUD en cuanto a ordenes, usuarios y productos.
 
 # Primeros pasos
 **Clonar la repo.**
