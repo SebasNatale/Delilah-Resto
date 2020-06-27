@@ -13,6 +13,12 @@ paths:
       description: "Devuelve una lista de productos disponibles. Tambien se puede por ID individual agregandolo al path!"
       produces:
         - "application/json"
+      parameters:
+      - in: "header"
+        name: "authorization"
+        required: true
+        type: "string"
+        description: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
       responses:
         200:
           description: "Devuelve un JSON con la lista"
@@ -31,10 +37,9 @@ paths:
       parameters:
         - in: "header"
           name: "authorization"
-          description: "Token de autorizacion"
           required: true
           type: "string"
-          example: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
+          description: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
         - in: "body"
           name: "body"
           description: "Producto a añadir"
@@ -49,12 +54,16 @@ paths:
             properties:
               product_id:
                 type: "number"
+                example: 2
               nombre:
                 type: "string"
+                example: "Pizza"
               precio:
                 type: "number"
+                example: 132
               link_foto:
                 type: "string"
+                example: placeholder.link/ejemplo
         400:
           description: "Error en solicitud! Los datos solicitados son nombre, precio y link_foto!"
   /productos/{id}:
@@ -76,10 +85,9 @@ paths:
           format: "int64"
         - in: "header"
           name: "authorization"
-          description: "Token de autorizacion"
+          description: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
           required: true
           type: "string"
-          example: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
         - in: "body"
           name: "body"
           description: "Producto a añadir"
@@ -108,10 +116,9 @@ paths:
           format: "int64"
         - in: "header"
           name: "authorization"
-          description: "Token de autorizacion"
+          description: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
           required: true
           type: "string"
-          example: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
       responses:
         200:
           description: "Borrado!"
@@ -128,10 +135,9 @@ paths:
       parameters:
         - in: "header"
           name: "authorization"
-          description: "Token de autorizacion"
+          description: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
           required: true
           type: "string"
-          example: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
       responses:
         200:
           description: "Exito!"
@@ -148,6 +154,11 @@ paths:
       produces:
         - "application/json"
       parameters:
+        - in: "header"
+          name: "authorization"
+          required: true
+          type: "string"
+          description: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
         - in: "body"
           name: "body"
           description: "Producto a añadir"
@@ -179,10 +190,9 @@ paths:
           format: "int64"
         - in: "header"
           name: "authorization"
-          description: "Token de autorizacion"
+          description: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
           required: true
           type: "string"
-          example: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
         - in: "body"
           name: "body"
           description: "Item a editar"
@@ -209,10 +219,9 @@ paths:
           format: "int64"
         - in: "header"
           name: "authorization"
-          description: "Token de autorizacion"
+          description: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
           required: true
           type: "string"
-          example: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
       responses:
         200:
           description: "Exito!"
@@ -226,10 +235,9 @@ paths:
       parameters:
         - in: "header"
           name: "authorization"
-          description: "Token de autorizacion"
+          description: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
           required: true
           type: "string"
-          example: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
       responses:
         200:
           description: "Exito!"
@@ -244,6 +252,11 @@ paths:
       produces:
         - "application/json"
       parameters:
+        - in: "header"
+          name: "authorization"
+          required: true
+          type: "string"
+          description: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
         - in: "body"
           name: "body"
           description: "Datos de usuario"
@@ -263,6 +276,11 @@ paths:
       produces:
         - "application/json"
       parameters:
+        - in: "header"
+          name: "authorization"
+          required: true
+          type: "string"
+          description: "Authorization: 'wkakjbadue4.t3gfddvdsgh46.y45j5yrhedtg' (NO usar la keyword 'bearer')"
         - name: "credenciales"
           in: "body"
           description: "El nombreUser y la password"
@@ -286,20 +304,22 @@ definitions:
     properties:
       order_id:
         type: "number"
+        example: 3
       descripcion:
         type: "string"
         example: "1x Hamburguesa"
       precio:
         type: "integer"
-        example: "312"
+        example: 312
       metodoPago:
         type: "string"
         example: "efectivo"
       nombreUser:
         type: "string"
+        example: "usuario123"
       direccion:
         type: "string"
-        description: "Calle Falsa 123"
+        example: "Calle Falsa 123"
       productos:
         type: "array"
         items:
@@ -307,12 +327,16 @@ definitions:
           properties:
             product_id:
               type: "number"
+              example: 2
             cantidadProducto:
               type: "integer"
+              example: 1
             nombre:
               type: "string"
+              example: "Pizza"
             precio:
               type: "integer"
+              example: 142
   orden_cargada:
     type: "object"
     properties:
@@ -323,11 +347,13 @@ definitions:
           properties:
             product_id:
               type: "number"
+              example: 3
             cantidad:
               type: "integer"
+              example: 1
       precio:
         type: "integer"
-        example: "324"
+        example: 324
       metodoPago:
         type: "string"
         example: "efectivo"
@@ -341,7 +367,8 @@ definitions:
       email:
         type: "string"
       telefono:
-        type: "string"
+        type: "number"
+        example: 2225555 (el telefono debe ser unico para cada usuario)
       direccion:
         type: "string"
       password:
@@ -354,6 +381,7 @@ definitions:
     properties:
       user_id:
         type: "number"
+        example: 2
   actualiEstado:
     type: "object"
     properties:
@@ -371,16 +399,16 @@ definitions:
     properties:
       product_id:
         type: "integer"
-        format: "int"
         example: "15"
       nombre:
         type: "string"
         example: "Pizza"
       precio:
         type: "number"
-        example: "3465"
+        example: 365
       link_foto:
         type: "string"
+        example: "placeholder.link/ejemplo"
   carga_producto:
     type: "object"
     properties:
@@ -389,5 +417,7 @@ definitions:
         example: "Pizza"
       precio:
         type: "integer"
+        example: 253
       link_foto:
         type: "string"
+        example: "placeholder.link/ejemplo"
